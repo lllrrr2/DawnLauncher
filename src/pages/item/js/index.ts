@@ -39,7 +39,7 @@ function setItemWidth() {
     let num = 1;
     // 布局
     let layout = getLayout(
-      classificationId ? parseInt(classificationId) : null
+      classificationId ? parseInt(classificationId) : null,
     );
     // 无名称
     if (store.setting.item.hideItemName) {
@@ -96,7 +96,7 @@ function convertItemList(itemList: Array<Item>): Map<number, Array<Item>> {
  * 获取项目列表
  */
 function getItemListByClassificationId(
-  classificationId: number | null
+  classificationId: number | null,
 ): Array<Item> {
   let resultList: Array<Item> = [];
   if (classificationId) {
@@ -252,7 +252,7 @@ function getItemByIdList(idList: Array<number>): Array<Item> {
 function updateItemOrder(
   fromIdList: Array<number>,
   toClassificationId: number,
-  newIndex: number | null
+  newIndex: number | null,
 ) {
   // 查询来源项目
   let fromItemList = getItemByIdList(fromIdList);
@@ -309,12 +309,12 @@ function updateItemOrder(
  */
 function moveItemByClassificationId(
   oldClassificationId: number,
-  newClassificationId: number
+  newClassificationId: number,
 ) {
   if (store.itemMap.has(oldClassificationId)) {
     store.itemMap.set(
       newClassificationId,
-      store.itemMap.get(oldClassificationId)!
+      store.itemMap.get(oldClassificationId)!,
     );
     deleteItemByClassificationId(oldClassificationId);
   } else {
@@ -341,7 +341,7 @@ function getAbbr(name: string): string | null {
  */
 function getItemSearchMap(
   itemList: Array<CommonItem | Item>,
-  remark: boolean = false
+  remark: boolean = false,
 ): Map<string, Array<CommonItem | Item>> {
   // 搜索Map
   let searchMap: Map<string, Array<CommonItem | Item>> = new Map();
@@ -413,40 +413,59 @@ function hasChinese(str: string): boolean {
 function searchItem(
   text: string,
   searchMap: Map<string, Array<CommonItem | Item>>,
-  maxLength: number | null = null
+  maxLength: number | null = null,
 ): Array<CommonItem | Item> {
   // 返回列表
-  let resultList: Array<CommonItem | Item> = [];
+  let resultList: Array<{
+    // 项目
+    item: CommonItem | Item;
+    // 关键字所在位置
+    index: number;
+  }> = [];
   // 转换为小写
   text = text.toLowerCase();
   // 循环搜索Map搜索项目
   for (const [key, value] of searchMap.entries()) {
+    // 转换为小写
+    let keyLower = key.toLowerCase();
+    // 标识：是否匹配
     let found = false;
-    if (hasChinese(key)) {
+    // 关键字所在位置
+    let index = 999999;
+    if (hasChinese(keyLower)) {
       // 包含中文
-      let res: Array<any> = match(key, text, {
+      let res = match(keyLower, text, {
         continuous: true,
         space: "preserve",
       });
       if (res && res.length > 0) {
         found = true;
+        index = res[0];
       }
     } else {
       // 其他情况
-      found = key.indexOf(text) >= 0;
+      found = keyLower.indexOf(text) >= 0;
+      index = keyLower.indexOf(text);
     }
     if (found) {
       // 去重并添加
       for (let vItem of value) {
         let exists = false;
         for (let rItem of resultList) {
-          if (vItem.id === rItem.id) {
+          if (vItem.id === rItem.item.id) {
             exists = true;
+            // 替换为最靠前的关键字所在位置
+            if (index < rItem.index) {
+              rItem.index = index;
+            }
             break;
           }
         }
         if (!exists) {
-          resultList.push(vItem);
+          resultList.push({
+            item: vItem,
+            index,
+          });
         }
       }
     }
@@ -455,7 +474,16 @@ function searchItem(
   if (maxLength) {
     resultList = resultList.slice(0, maxLength);
   }
-  return resultList;
+  // 根据关键字所在位置，正序排序
+  resultList.sort((a, b) => {
+    const indexDiff = a.index - b.index;
+    if (indexDiff !== 0) return indexDiff;
+    const aName = a.item.name ?? "";
+    const bName = b.item.name ?? "";
+    return aName.localeCompare(bName, "en");
+  });
+  // 返回
+  return resultList.map((result) => result.item);
 }
 
 /**
@@ -466,7 +494,7 @@ function searchItem(
  */
 function showItemList(
   itemList: Array<Item>,
-  classification: Classification | null
+  classification: Classification | null,
 ) {
   // 返回数据
   let resultList = [];
@@ -530,7 +558,7 @@ function sort(
     | "openNumber"
     | "lastOpen"
     | "quickSearchOpenNumber"
-    | "quickSearchLastOpen"
+    | "quickSearchLastOpen",
 ) {
   if (type === "initial") {
     return list.sort((x, y) => {
@@ -661,7 +689,7 @@ function itemHoverStyle(e: any, className: string) {
   let style: Map<string, string> = new Map();
   style.set(
     "background-color",
-    hexToRGBA(store.setting.appearance.theme.secondBackgroundColor, 0.3)
+    hexToRGBA(store.setting.appearance.theme.secondBackgroundColor, 0.3),
   );
   setStyle(e, className, style);
 }
