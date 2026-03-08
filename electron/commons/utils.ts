@@ -1,4 +1,4 @@
-import { resolve, dirname, parse, join } from "node:path";
+import { resolve, dirname, parse, join, normalize } from "node:path";
 import { isAbsolutePath } from "../../commons/utils/common";
 import mime from "mime";
 import { readFileSync } from "node:fs";
@@ -58,6 +58,12 @@ function getURLParams(paramsMap: Map<string, any>) {
  * @param path
  */
 function parseEnvPath(path: string) {
+  // 是否只有盘符
+  let normalized = normalize(path);
+  let isDrive = /^[a-zA-Z]:[\\/]?$/.test(normalized);
+  if (isDrive) {
+    return normalized;
+  }
   // 尝试解析路径中的环境变量
   let parsedPath = parse(path);
   // 路径数组
@@ -86,7 +92,7 @@ function parseEnvPath(path: string) {
     if (pattern.test(string)) {
       // 尝试获取
       let env: string | null = global.addon.getEnvByName(
-        string.substring(1, string.length - 1)
+        string.substring(1, string.length - 1),
       );
       // 如果提取到环境变量了就使用环境变量路径，如果没有就使用原路径
       if (env && env.trim() !== "") {
@@ -125,7 +131,7 @@ function parsePath(path: string) {
       process.env.NODE_ENV === "development"
         ? resolve(".")
         : dirname(process.execPath),
-      path
+      path,
     );
   }
   return path;
