@@ -64,7 +64,7 @@ function createMainWindow() {
   mainWindow.webContents.on("did-finish-load", () => {
     // 设置窗口无动画
     global.addon.removeWindowAnimation(
-      mainWindow.getNativeWindowHandle().readInt32LE(0)
+      mainWindow.getNativeWindowHandle().readInt32LE(0),
     );
     // 永远居中不可移动
     if (global.setting.general.alwaysCenter) {
@@ -83,7 +83,7 @@ function createMainWindow() {
     // 如果是锁定尺寸的话，使用锁定尺寸来设置窗口尺寸
     if (global.setting.general.lockSize) {
       let lockSizeBounds: any = cacheData.cacheStore.get(
-        "mainWindowLockSizeBounds"
+        "mainWindowLockSizeBounds",
       );
       if (lockSizeBounds) {
         if (bounds) {
@@ -101,7 +101,7 @@ function createMainWindow() {
         } else {
           cacheData.cacheStore.set(
             "mainWindowLockSizeBounds",
-            mainWindow.getBounds()
+            mainWindow.getBounds(),
           );
         }
       }
@@ -131,7 +131,7 @@ function createMainWindow() {
     // 显示窗口时将输入法切换为英文模式
     if (global.setting.general.switchEnglish) {
       global.addon.switchEnglish(
-        mainWindow.getNativeWindowHandle().readInt32LE(0)
+        mainWindow.getNativeWindowHandle().readInt32LE(0),
       );
     }
     // 边缘吸附
@@ -245,7 +245,9 @@ function onBlurHide() {
     !global.setting.general.alwaysTop &&
     global.mainWindow.getChildWindows().length === 0 &&
     !global.mainWindowShowDialog &&
-    !hasCursorPosWindow(global.mainWindow)
+    !hasCursorPosWindow(global.mainWindow) &&
+    !global.itemRightMenu &&
+    !global.classificationRightMenu
   ) {
     // 隐藏窗口
     hideMainWindow();
@@ -287,7 +289,7 @@ function hasCursorPosWindow(window: BrowserWindow) {
 function showMainWindowBefore(
   blurHide: boolean,
   autoHide = false,
-  selectedClassificationId: number | null = null
+  selectedClassificationId: number | null = null,
 ) {
   // 向主窗口发送通知
   sendToWebContent("mainWindow", "onShowMainWindowBefore", {
@@ -761,7 +763,7 @@ function autoHide(size: number, timer: boolean) {
  */
 function doubleClickTaskbar(
   mousedownClassName: string | null,
-  className: string | null
+  className: string | null,
 ) {
   if (!mainWindowExist()) {
     return;
