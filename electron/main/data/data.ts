@@ -79,7 +79,7 @@ function databaseRestore(filePath: string) {
 function clearAndInsert(
   db: Database.Database,
   tableName: string,
-  list: Array<any>
+  list: Array<any>,
 ) {
   // 清空数据
   db.prepare(`DELETE FROM ${tableName}`).run();
@@ -90,7 +90,7 @@ function clearAndInsert(
     const placeholders = keys.map(() => "?").join(",");
     const values = keys.map((key) => row[key]);
     db.prepare(
-      `INSERT INTO ${tableName} (${columns.join(",")}) VALUES (${placeholders})`
+      `INSERT INTO ${tableName} (${columns.join(",")}) VALUES (${placeholders})`,
     ).run(values);
   });
 }
@@ -136,7 +136,7 @@ function jsonRestore(filePath: string) {
                 const child = parent.childList[j];
                 let childClassification = jsonAddClassification(
                   child,
-                  classification.id
+                  classification.id,
                 );
                 if (
                   childClassification &&
@@ -149,7 +149,7 @@ function jsonRestore(filePath: string) {
                       child.itemList[k],
                       child,
                       childClassification.id,
-                      iconData
+                      iconData,
                     );
                   }
                 }
@@ -162,7 +162,7 @@ function jsonRestore(filePath: string) {
                     parent.itemList[k],
                     parent,
                     classification.id,
-                    iconData
+                    iconData,
                   );
                 }
               }
@@ -192,7 +192,7 @@ function jsonRestore(filePath: string) {
  */
 function jsonAddClassification(
   oldClassification: any,
-  parentId: number | null
+  parentId: number | null,
 ) {
   // 排序
   let itemSort: "default" | "initial" | "openNumber" | "lastOpen" = "default";
@@ -262,7 +262,7 @@ function jsonAddClassification(
     classification.shortcutKey,
     classification.globalShortcutKey,
     classification.data,
-    classification.type
+    classification.type,
   );
 }
 
@@ -277,7 +277,7 @@ function jsonAddItem(
   oldItem: any,
   oldClassification: any,
   classificationId: number,
-  iconData: Array<any>
+  iconData: Array<any>,
 ) {
   // 类型
   let type = oldItem.type;
@@ -341,7 +341,6 @@ function jsonAddItem(
     fixedIcon: oldItem.notRefreshIcon,
     openNumber: oldItem.openNumber,
     lastOpen: oldItem.lastOpen,
-    quickSearchOpenNumber: oldItem.quickSearchOpenNumber,
     quickSearchLastOpen: oldItem.quickSearchLastOpen,
   });
   let item = newItem({

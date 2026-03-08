@@ -69,7 +69,7 @@
             store.quickSearchItemRightMenuItemId === item.id
               ? hexToRGBA(
                   store.setting.appearance.theme.secondBackgroundColor,
-                  0.3
+                  0.3,
                 )
               : undefined,
         }"
@@ -77,7 +77,7 @@
         :index="index"
         :target="item.data.target"
       >
-        <CustomItemIcon :item="(item as Item)" :icon-size="28"></CustomItemIcon>
+        <CustomItemIcon :item="item as Item" :icon-size="28"></CustomItemIcon>
         <span
           class="text-sm ml-[10px] overflow-hidden text-ellipsis whitespace-nowrap h-[20px]"
           >{{ getName(item.name) }}</span
@@ -209,7 +209,7 @@ watch(
   () => value.value,
   () => {
     search();
-  }
+  },
 );
 // 搜索
 function search() {
@@ -246,8 +246,8 @@ function refresh() {
       !resultList.value || resultList.value.length === 0
         ? 0
         : resultList.value.length > 9
-        ? 10 * 48 + 1
-        : resultList.value.length * 48 + 1;
+          ? 10 * 48 + 1
+          : resultList.value.length * 48 + 1;
     window.quickSearch.setWindowHeight(height + 44);
   });
 }
@@ -271,7 +271,7 @@ function resetScroll() {
 function getData() {
   // 分类
   store.classificationList = convertClassificationList(
-    window.classification.list()
+    window.classification.list(),
   );
   // 项目
   store.itemMap = convertItemList(window.item.list());
@@ -280,7 +280,7 @@ function getData() {
   // 搜索Map
   searchMap = getItemSearchMap(
     itemList,
-    store.setting.quickSearch.matchConditionsRemark
+    store.setting.quickSearch.matchConditionsRemark,
   );
   // 历史记录
   getHistory();
@@ -292,7 +292,7 @@ function getHistory() {
     let itemList: Array<Item> = filterExcludeSearchItemList().filter((item) => {
       if (
         store.setting.quickSearch.showHistorySort === "openNumber" &&
-        item.data.quickSearchOpenNumber > 0
+        item.data.openNumber > 0
       ) {
         return true;
       } else if (
@@ -307,8 +307,8 @@ function getHistory() {
     let sortList = sort(
       itemList,
       store.setting.quickSearch.showHistorySort === "openNumber"
-        ? "quickSearchOpenNumber"
-        : "quickSearchLastOpen"
+        ? "openNumber"
+        : "quickSearchLastOpen",
     );
     if (sortList && sortList.length > 0) {
       // 截取数据
@@ -712,7 +712,7 @@ onMounted(() => {
         // 显示窗口
         window.quickSearch.showWindow();
       }, 10);
-    })
+    }),
   );
   // 清空数据
   listens.push(
@@ -723,14 +723,14 @@ onMounted(() => {
       selected.value = 0;
       mode.value = "search";
       webSearchSource.value = null;
-    })
+    }),
   );
   // 监听项目右键菜单关闭
   listens.push(
     window.item.onRightMenuClose((data) => {
       store.quickSearchItemRightMenuItemId = null;
       itemAllRemoveStyle("item", selected.value);
-    })
+    }),
   );
   // 监听项目资源管理器菜单
   listens.push(
@@ -738,18 +738,18 @@ onMounted(() => {
       if (data.type === "quickSearch") {
         store.quickSearchItemRightMenuItemId = data.id;
       }
-    })
+    }),
   );
-  // 删除历史记录
+  // 监听更新打开信息
   listens.push(
     window.item.onUpdateOpenInfo((data) => {
       let item = getItemById(data.id);
       if (item) {
-        item.data.quickSearchOpenNumber = data.quickSearchOpenNumber;
+        item.data.openNumber = data.openNumber;
         item.data.quickSearchLastOpen = data.quickSearchLastOpen;
       }
       getHistory();
-    })
+    }),
   );
 });
 // unmounted

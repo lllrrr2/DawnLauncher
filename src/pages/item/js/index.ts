@@ -557,7 +557,6 @@ function sort(
     | "initial"
     | "openNumber"
     | "lastOpen"
-    | "quickSearchOpenNumber"
     | "quickSearchLastOpen",
 ) {
   if (type === "initial") {
@@ -609,7 +608,6 @@ function sort(
   } else if (
     type === "openNumber" ||
     type === "lastOpen" ||
-    type === "quickSearchOpenNumber" ||
     type === "quickSearchLastOpen"
   ) {
     return list
@@ -781,7 +779,7 @@ function getItemTitle(item: Item, quickSearch: boolean = false) {
       "\n" +
       store.language.openCount +
       store.language.colon +
-      (item.data.quickSearchOpenNumber ?? 0);
+      (item.data.openNumber ?? 0);
   } else if (store.setting.item.openNumber) {
     name +=
       "\n" +

@@ -45,7 +45,7 @@ let itemSVGIconWindow: BrowserWindow | null = null;
  */
 async function createAddEditWindow(
   id: number | null,
-  classificationId: number | null
+  classificationId: number | null,
 ) {
   // 如果窗口存在先关闭窗口
   closeWindow(itemAddEditWindow);
@@ -83,7 +83,7 @@ async function createAddEditWindow(
   }
   if (process.env.VITE_DEV_SERVER_URL) {
     itemAddEditWindow.loadURL(
-      process.env.VITE_DEV_SERVER_URL + "item/AddEdit" + getURLParams(params)
+      process.env.VITE_DEV_SERVER_URL + "item/AddEdit" + getURLParams(params),
     );
   } else {
     itemAddEditWindow.loadFile(join(process.env.DIST, "index.html"), {
@@ -139,7 +139,7 @@ async function createNetworkIconWindow() {
   });
   if (process.env.VITE_DEV_SERVER_URL) {
     itemNetworkIconWindow.loadURL(
-      process.env.VITE_DEV_SERVER_URL + "item/NetworkIcon"
+      process.env.VITE_DEV_SERVER_URL + "item/NetworkIcon",
     );
   } else {
     itemNetworkIconWindow.loadFile(join(process.env.DIST, "index.html"), {
@@ -296,14 +296,15 @@ function updateOpenInfo(type: string, id: number) {
       // 记录打开信息
       curItem.data.quickSearchLastOpen = new Date().getTime();
       // 记录打开次数
-      curItem.data.quickSearchOpenNumber += 1;
+      if (global.setting.item.openNumber) {
+        curItem.data.openNumber += 1;
+      }
     }
     if (updateData(curItem.id, curItem.data)) {
       sendToWebContent("mainWindow", "onUpdateOpenInfo", {
         id: curItem.id,
         openNumber: curItem.data.openNumber,
         lastOpen: curItem.data.lastOpen,
-        quickSearchOpenNumber: curItem.data.quickSearchOpenNumber,
         quickSearchLastOpen: curItem.data.quickSearchLastOpen,
         type,
       });
@@ -320,7 +321,7 @@ function updateOpenInfo(type: string, id: number) {
 function run(
   type: string,
   operation: "open" | "runas" | "openFileLocation" | "explore",
-  item: Item
+  item: Item,
 ) {
   if (item.data) {
     if (operation === "open" && item.data.runAsAdmin) {
@@ -356,7 +357,7 @@ function run(
             operation,
             item.data.target,
             item.data.params ?? "",
-            item.data.startLocation
+            item.data.startLocation,
           );
         }
       } catch (e) {
@@ -495,7 +496,7 @@ function refreshIcon(idList: Array<number>) {
       }
       // 发送消息到页面
       sendToWebContent("mainWindow", "onRefreshItemIcon", itemList);
-    }
+    },
   );
 }
 
@@ -533,7 +534,7 @@ function getDirectoryList(
   dir: string | null,
   hiddenItems: string | null,
   listen: boolean,
-  clear: boolean
+  clear: boolean,
 ) {
   // 校验目录
   if (!dir || dir.trim() === "") {
@@ -578,7 +579,7 @@ function getDirectoryList(
           classificationId,
         });
       }
-    }
+    },
   );
 }
 
@@ -671,7 +672,6 @@ function checkInvalid() {
 function clearOpenInfo(item: Item) {
   item.data.openNumber = 0;
   item.data.lastOpen = 0;
-  item.data.quickSearchOpenNumber = 0;
   item.data.quickSearchLastOpen = 0;
 }
 
@@ -685,20 +685,17 @@ function deleteQuickSearchHistory(itemId: number) {
   if (item) {
     // 重置历史记录
     item.data.quickSearchLastOpen = 0;
-    item.data.quickSearchOpenNumber = 0;
     // 更新
     updateData(itemId, item.data);
     // 通知主页面
     sendToWebContent("mainWindow", "onUpdateOpenInfo", {
       id: itemId,
-      quickSearchOpenNumber: item.data.quickSearchOpenNumber,
       quickSearchLastOpen: item.data.quickSearchLastOpen,
       type: "quickSearch",
     });
     // 通知快速搜索页面
     sendToWebContent("quickSearchWindow", "onUpdateOpenInfo", {
       id: itemId,
-      quickSearchOpenNumber: item.data.quickSearchOpenNumber,
       quickSearchLastOpen: item.data.quickSearchLastOpen,
     });
   }
@@ -711,7 +708,7 @@ function deleteQuickSearchHistory(itemId: number) {
  */
 async function getDropItemInfo(
   classificationId: number,
-  pathList: Array<string>
+  pathList: Array<string>,
 ) {
   // 项目列表
   let itemList: Array<Item> = [];

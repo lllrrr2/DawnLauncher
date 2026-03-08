@@ -20,7 +20,7 @@
       >
         <div
           v-for="(classification, index) of getClassificationChildList(
-            store.selectedClassificationParentId
+            store.selectedClassificationParentId,
           )"
           :key="'classification-child-' + classification.id + '-item-' + index"
           class="item-container"
@@ -67,7 +67,7 @@
         <ItemList
           :data="
             getShowItemListByClassificationId(
-              store.selectedClassificationParentId
+              store.selectedClassificationParentId,
             )
           "
           :classification-id="store.selectedClassificationParentId"
@@ -164,7 +164,7 @@ watch(
       // 滚动到顶部
       scrollToTop(itemContentSimpleBar);
     });
-  }
+  },
 );
 // 监听选中的父级分类
 watch(
@@ -181,7 +181,7 @@ watch(
       // 滚动到顶部
       scrollToTop(itemContentSimpleBar);
     });
-  }
+  },
 );
 // 监听选中的子级分类
 watch(
@@ -198,7 +198,7 @@ watch(
       // 滚动到顶部
       scrollToTop(itemContentSimpleBar);
     });
-  }
+  },
 );
 /**
  * 获取项目列表
@@ -241,7 +241,7 @@ function createSimpleBar() {
               }
             }
           },
-          { passive: false, capture: true }
+          { passive: false, capture: true },
         );
       }
     } else {
@@ -314,7 +314,7 @@ function createItemSortable() {
                 // 普通操作
                 // from 分类ID
                 let fromClassificationId = parseInt(
-                  event.from.getAttribute("classification-id")!
+                  event.from.getAttribute("classification-id")!,
                 );
                 let fromClassification =
                   getClassificationById(fromClassificationId);
@@ -326,7 +326,7 @@ function createItemSortable() {
                     // 可能会存在自定义排序的情况，所以需要按照指定的排序方式获取项目
                     const currentItem = showItemList(
                       copyItemList,
-                      fromClassification
+                      fromClassification,
                     )[event.oldIndex];
                     fromIdList.push(currentItem.id);
                   }
@@ -348,13 +348,13 @@ function createItemSortable() {
                 let res = window.item.updateOrder(
                   fromIdList,
                   toClassificationId,
-                  store.mouseoverClassificationId ? null : event.newIndex
+                  store.mouseoverClassificationId ? null : event.newIndex,
                 );
                 if (res) {
                   updateItemOrder(
                     fromIdList,
                     toClassificationId,
-                    store.mouseoverClassificationId ? null : event.newIndex
+                    store.mouseoverClassificationId ? null : event.newIndex,
                   );
                 }
               }
@@ -368,7 +368,7 @@ function createItemSortable() {
               setItemWidth();
             });
           },
-        })
+        }),
       );
     } else {
       // 将所有元素设置为可拖拽，项目拖出时需要用到
@@ -413,7 +413,7 @@ watch(
         }
       }
     }
-  }
+  },
 );
 // 清除批量操作
 function clearBatchOperation() {
@@ -638,7 +638,7 @@ async function contextmenu(e: any) {
   let itemListElement = getClassElement(e, "item-list");
   if (itemListElement) {
     pageClassificationId = parseInt(
-      itemListElement.getAttribute("classification-id")
+      itemListElement.getAttribute("classification-id"),
     );
   }
   // 弹出菜单
@@ -716,7 +716,7 @@ onMounted(() => {
         // 设置项目宽度
         setItemWidth();
       });
-    })
+    }),
   );
   // 监听更新项目
   listens.push(
@@ -729,7 +729,7 @@ onMounted(() => {
         // 设置项目宽度
         setItemWidth();
       });
-    })
+    }),
   );
   // 监听删除项目
   listens.push(
@@ -749,7 +749,7 @@ onMounted(() => {
         // 设置项目宽度
         setItemWidth();
       });
-    })
+    }),
   );
   // 监听锁定/解锁项目
   listens.push(
@@ -766,7 +766,7 @@ onMounted(() => {
         // 创建项目拖拽对象
         createItemSortable();
       });
-    })
+    }),
   );
   // 监听批量操作
   listens.push(
@@ -778,7 +778,7 @@ onMounted(() => {
         // 创建项目拖拽对象
         createItemSortable();
       });
-    })
+    }),
   );
   // 监听转换路径
   listens.push(
@@ -795,7 +795,7 @@ onMounted(() => {
       }
       // 清空批量操作
       clearBatchOperation();
-    })
+    }),
   );
   // 监听刷新图标
   listens.push(
@@ -813,7 +813,7 @@ onMounted(() => {
       }
       // 清空批量操作
       clearBatchOperation();
-    })
+    }),
   );
   // 监听移动项目
   listens.push(
@@ -828,7 +828,7 @@ onMounted(() => {
         // 创建项目拖拽对象
         createItemSortable();
       });
-    })
+    }),
   );
   // 监听批量操作全选
   listens.push(
@@ -839,7 +839,7 @@ onMounted(() => {
         hasChildClassification(store.selectedClassificationParentId)
       ) {
         let classificationList = getClassificationChildList(
-          store.selectedClassificationParentId
+          store.selectedClassificationParentId,
         );
         for (const classification of classificationList) {
           if (classification.type === 0) {
@@ -857,7 +857,7 @@ onMounted(() => {
           let classification = getClassificationById(classificationId);
           if (classification && classification.type === 0) {
             let itemList = getItemListByClassificationId(
-              getSelectedClassificationId()
+              getSelectedClassificationId(),
             );
             for (const item of itemList) {
               if (!store.itemBatchOperationDataArray.includes(item.id)) {
@@ -867,14 +867,14 @@ onMounted(() => {
           }
         }
       }
-    })
+    }),
   );
   // 监听项目右键菜单关闭
   listens.push(
     window.item.onRightMenuClose((data) => {
       store.itemRightMenuItemId = null;
       store.searchItemRightMenuItemId = null;
-    })
+    }),
   );
   // 监听项目资源管理器菜单
   listens.push(
@@ -884,14 +884,14 @@ onMounted(() => {
       } else if (data.type === "search") {
         store.searchItemRightMenuItemId = data.id;
       }
-    })
+    }),
   );
   // 监听取消项目拖拽
   listens.push(
     window.item.onCancelDragOut((data) => {
       store.itemDragOutData = null;
       store.itemDragOut = false;
-    })
+    }),
   );
   // 监听更新打开次数
   listens.push(
@@ -902,17 +902,17 @@ onMounted(() => {
           item.data.openNumber = data.openNumber;
           item.data.lastOpen = data.lastOpen;
         } else if (data.type === "quickSearch") {
-          item.data.quickSearchOpenNumber = data.quickSearchOpenNumber;
+          item.data.openNumber = data.openNumber;
           item.data.quickSearchLastOpen = data.quickSearchLastOpen;
         }
       }
-    })
+    }),
   );
   // 监听无效项目
   listens.push(
     window.item.onCheckInvalid((data) => {
       store.invalidItemIdList = data;
-    })
+    }),
   );
 });
 // unmounted

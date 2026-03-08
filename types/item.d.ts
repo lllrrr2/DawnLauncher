@@ -66,8 +66,6 @@ export interface ItemData {
   openNumber: number;
   // 最后打开时间
   lastOpen: number;
-  // 快速搜索-打开次数
-  quickSearchOpenNumber: number;
   // 快速搜索-最后打开时间
   quickSearchLastOpen: number;
   // 多项目时间间隔(毫秒)

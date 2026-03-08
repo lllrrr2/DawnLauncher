@@ -243,7 +243,6 @@ function newItemData({
   fixedIcon = false,
   openNumber = 0,
   lastOpen = 0,
-  quickSearchOpenNumber = 0,
   quickSearchLastOpen = 0,
   multiItemsTimeInterval = 0,
 }: {
@@ -258,7 +257,6 @@ function newItemData({
   fixedIcon?: boolean | null;
   openNumber?: number | null;
   lastOpen?: number | null;
-  quickSearchOpenNumber?: number | null;
   quickSearchLastOpen?: number | null;
   multiItemsTimeInterval?: number | null;
 }): ItemData {
@@ -274,7 +272,6 @@ function newItemData({
     fixedIcon: fixedIcon ?? false,
     openNumber: openNumber ?? 0,
     lastOpen: lastOpen ?? 0,
-    quickSearchOpenNumber: quickSearchOpenNumber ?? 0,
     quickSearchLastOpen: quickSearchLastOpen ?? 0,
     multiItemsTimeInterval: multiItemsTimeInterval ?? 0,
   };

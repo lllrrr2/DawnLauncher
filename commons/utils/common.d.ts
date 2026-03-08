@@ -64,7 +64,6 @@ export function newItemData(data: {
   fixedIcon?: boolean | null;
   openNumber?: number | null;
   lastOpen?: number | null;
-  quickSearchOpenNumber?: number | null;
   quickSearchLastOpen?: number | null;
   multiItemsTimeInterval?: number | null;
 }): ItemData;
